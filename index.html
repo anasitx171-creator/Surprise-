@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Birthday Surprise</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&family=Pacifico&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('https://images.unsplash.com/photo-1518199266791-5375a83190b7') center/cover no-repeat;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+    }
+
+    .box {
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .hidden { display: none; }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      color: white;
+      text-shadow: 0 0 10px rgba(0,0,0,0.6);
+    }
+
+    .cake {
+      font-size: 60px;
+      animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #ff4081;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      margin: 10px;
+    }
+
+    .msgBox {
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(10px);
+      padding: 15px;
+      border-radius: 15px;
+      color: white;
+      font-size: 14px;
+      line-height: 1.5;
+      max-height: 60vh;
+      overflow-y: auto;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    /* 💖 Hearts */
+    .heart {
+      position: fixed;
+      bottom: -10px;
+      font-size: 20px;
+      animation: floatUp 3s linear forwards;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-100vh); opacity: 0; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- 🎵 ADD YOUR MUSIC FILE HERE -->
+<audio id="bgMusic" src="music.mp3" loop></audio>
+
+<canvas id="confetti"></canvas>
+
+<div class="box">
+
+<div id="step1">
+  <h1>🎂 Tap to see surprise 🎂</h1>
+  <button onclick="startAll()">Start 🎉</button>
+</div>
+
+<div id="step2" class="hidden">
+  <div class="cake">🎂 🎂 🎂</div>
+  <button onclick="showName()">Blow Candles 🎂</button>
+</div>
+
+<div id="step3" class="hidden">
+  <h1>🎉 Happy Birthday meri pyaari si ariibaaa jii 🎉</h1>
+  <button onclick="showMessage()">Next 💌</button>
+</div>
+
+<div id="step4" class="hidden">
+  <div class="msgBox">
+💖 Happy Birthday meri medam ji ❤️🎂🥳<br><br>
+
+Aaj ka din mere liye bhi utna hi special hai jitni tum ho 💖 Pata hai, jab se tum meri life mein aayi ho na, sab kuch itna beautiful lagne laga hai… jaise har din ka reason mil gaya ho smile karne ka 😊✨<br><br>
+
+Tumhari smile meri jaan hai, aur main bas yehi chahta hoon ki tum hamesha aise hi haste raho 🥺❤️<br><br>
+
+Main shayad perfect nahi hoon, par ek promise hai — main hamesha tumhe khush rakhne ki full koshish karunga 💕 Tum deserve karti ho duniya ki saari khushiyan, aur main chahta hoon ki tumhari har wish poori ho 🎁✨<br><br>
+
+Thank you meri life mein aane ke liye aur use itna special banane ke liye 💖<br><br>
+
+Once again… Happy Birthday meri cutie 🥰🎉<br>
+I love you sooooo much meri ariiba jiii ❤️
+  </div>
+</div>
+
+</div>
+
+<script>
+function startAll() {
+  showCake();
+  document.getElementById("bgMusic").play();
+}
+
+function showCake() {
+  step1.classList.add("hidden");
+  step2.classList.remove("hidden");
+}
+
+function showName() {
+  step2.classList.add("hidden");
+  step3.classList.remove("hidden");
+}
+
+function showMessage() {
+  step3.classList.add("hidden");
+  step4.classList.remove("hidden");
+  createHearts();
+}
+
+/* 💖 HEARTS */
+function createHearts() {
+  setInterval(() => {
+    let heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 3000);
+  }, 300);
+}
+
+/* 🎆 CONFETTI */
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const colors = ["#ff4081","#ffd700","#00e5ff","#7c4dff","#69f0ae"];
+let pieces = [];
+
+function createBlast() {
+  for (let i = 0; i < 200; i++) {
+    pieces.push({
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      size: Math.random() * 6 + 3,
+      speedX: (Math.random() - 0.5) * 10,
+      speedY: (Math.random() - 0.5) * 10,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      life: 70
+    });
+  }
+}
+
+function drawConfetti() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  pieces.forEach((p, i) => {
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, p.size, p.size);
+
+    p.x += p.speedX;
+    p.y += p.speedY;
+    p.speedY += 0.2;
+    p.life--;
+
+    if (p.life <= 0) pieces.splice(i,1);
+  });
+
+  if (pieces.length > 0) requestAnimationFrame(drawConfetti);
+}
+
+window.onload = () => {
+  createBlast();
+  drawConfetti();
+};
+</script>
+
+</body>
+</html>
